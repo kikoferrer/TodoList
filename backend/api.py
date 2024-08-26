@@ -12,7 +12,7 @@ def main():
     todo_cache = db.extract_table()
 
     @app.post("/entries")
-    def create_entry(entry: str) -> str:
+    def create_entry(entry: str) -> dict[str, dict]:
         if todo_cache:
             next_index = max(todo_cache.keys()) + 1
         else:
@@ -25,14 +25,14 @@ def main():
         }
 
         todo_cache[next_index] = new_entry
-        return {"message": "Entry added"}
+        return {"message": new_entry}
 
     @app.get("/entries")
-    def show_list() -> dict[int, dict[str, str]]:
+    def show_list() -> dict[int, dict]:
         return todo_cache
 
     @app.get("/entries/{entry_id}")
-    def show_entry(entry_id: int) -> dict[int, dict[str, str]]:
+    def show_entry(entry_id: int) -> dict[int, dict]:
         pass
 
     @app.put("/entries/{entry_id}")
