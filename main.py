@@ -8,7 +8,7 @@ subprocess.Popen(["uvicorn", "api:app", "--reload"], cwd="backend/")
 time.sleep(2)
 
 title = input("Enter todo list title: ")
-init_response = requests.post("http://127.0.0.1:8000/database", json={"message": title})
+init_response = requests.post("http://127.0.0.1:8000/tables", json={"message": title})
 
 if init_response.status_code == 200:
     while True:
@@ -33,9 +33,10 @@ if init_response.status_code == 200:
             print(f"{key}. {value}")
         prompt = input("\nEnter your option: ")
         if prompt.lower() == "q":
-            response = requests.get("http://127.0.0.1:8000/close")
+            response = requests.post("http://127.0.0.1:8000/shutdown")
             if response.status_code == 200:
-                print("Server closed")
+                message = response.json()
+                print(message["message"])
             break
         elif prompt.upper() in options.keys():
             if prompt.lower() == "a":

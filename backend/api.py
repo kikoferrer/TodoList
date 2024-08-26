@@ -18,7 +18,7 @@ def reenumerate_cache(todo_cache):
     return todo
 
 
-@app.post("/database")
+@app.post("/tables")
 async def choose_database(title_payload: dict):
     global db
     global todo_cache
@@ -78,10 +78,8 @@ async def delete_entry(entry_id: int):
     todo_cache.pop(entry_id)
 
 
-@app.get("/close")
+@app.post("/shutdown")
 async def save_to_database() -> dict:
-    todo_list = reenumerate_cache(todo_cache)
-    db.save_entries_to_db(todo_list)
     db.close_db()
     os.system("pkill uvicorn")
-    return {"message": "Database Closed"}
+    return {"message": "Server Shutdown"}
