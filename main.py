@@ -73,7 +73,7 @@ if init_response.status_code == 200:
                 entry = input("Enter your entry update: ")
                 requests.put(
                     f"http://127.0.0.1:8000/entries/{id_num}", json={"message": entry}
-                ).json()
+                )
                 print("What would you like to do next?")
             elif prompt.lower() == "d":
                 print("You chose delete an entry.\n")
