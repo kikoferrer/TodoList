@@ -1,4 +1,6 @@
 import tkinter as tk
+import os
+import json
 from api_requests import FrontendRequests
 
 bg = "#181818"
@@ -6,6 +8,8 @@ fg = "#EFEFEF"
 selected_bg = "#4A4A4A"
 selected_fg = "#ffffff"
 btn_bg = "#383838"
+
+list_file = "list_items.json"
 
 window = tk.Tk()
 window.title("Todo List")
@@ -16,7 +20,7 @@ req = FrontendRequests()
 main_frame = tk.Frame(master=window, width=1280, height=720, bg=bg)
 main_frame.pack(fill=tk.BOTH, expand=True)
 
-window_frame = tk.Frame(master=main_frame, width=50, height=50, bg="blue")
+window_frame = tk.Frame(master=main_frame, width=50, height=50, bg=btn_bg)
 window_frame.pack(padx=5, pady=5, fill=tk.BOTH, side=tk.TOP, expand=True)
 
 
@@ -88,6 +92,24 @@ def display_list():
         update_btn.pack(side=tk.RIGHT, padx=5)
         delete_btn.pack(side=tk.RIGHT, padx=5)
 
+    entry_frame = tk.Frame(
+        window_frame,
+        bg=bg,
+    )
+    entry_frame.pack(padx=5, pady=5, fill=tk.X, side=tk.TOP)
+
+    create_btn = tk.Button(
+        entry_frame,
+        text="+",
+        command=open_entry_window,
+        bg=btn_bg,
+        fg=fg,
+        border=0,
+        activebackground=selected_bg,
+        activeforeground=selected_fg,
+    )
+    create_btn.pack(pady=5, padx=5, side=tk.LEFT)
+
 
 button_frame = tk.Frame(master=main_frame, width=50, height=50, bg=bg)
 button_frame.pack(padx=5, fill=tk.X, side=tk.BOTTOM)
@@ -124,25 +146,30 @@ def open_entry_window(id_num=None):
     submit_button.pack(side=tk.LEFT, padx=10, pady=5)
 
 
-create_btn = tk.Button(
-    button_frame,
-    text="Create Entry",
-    command=open_entry_window,
-    bg=btn_bg,
-    fg=fg,
-    border=0,
-    activebackground=selected_bg,
-    activeforeground=selected_fg,
-)
-create_btn.pack(pady=5, padx=5, side=tk.LEFT)
-
-
 def list_names():
+    list_window = tk.Toplevel(window, bg=bg)
+    list_window.title("List Names")
+
+    listbox = tk.Listbox(list_window, bg=selected_bg, fg=fg)
+    listbox.pack(padx=10, pady=10)
+
+    if os.path.exists(list_file):
+        with open(list_file, "r") as f:
+            list_items = json.load(f)
+            listbox.delete(0, tk.END)
+            for item in list_items:
+                listbox.insert(tk.END, item)
+    else:
+        list_items = []
+
     def add_to_list():
         item = list_entry.get().strip()
         if item:
             listbox.insert(tk.END, item)
             list_entry.delete(0, tk.END)
+            list_items.append(item)
+            with open(list_file, "w") as f:
+                json.dump(list_items, f)
 
     def update_label():
         selected_index = listbox.curselection()
@@ -150,12 +177,6 @@ def list_names():
             selected_item = listbox.get(selected_index)
             list_label_var.set(selected_item)
         list_window.destroy()
-
-    list_window = tk.Toplevel(window, bg=bg)
-    list_window.title("List Names")
-
-    listbox = tk.Listbox(list_window, bg=selected_bg, fg=fg)
-    listbox.pack(padx=10, pady=10)
 
     list_entry = tk.Entry(list_window, bg=selected_bg, fg=fg)
     list_entry.pack(padx=10, pady=10)

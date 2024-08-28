@@ -2,3 +2,4 @@ venv
 todo.txt
 __pycache__
 db
+frontend/list_items.json
