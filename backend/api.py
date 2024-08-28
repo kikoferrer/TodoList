@@ -57,12 +57,6 @@ async def show_list() -> dict:
         return todo_list
 
 
-@app.get("/entries/{entry_id}")
-async def show_entry(entry_id: int) -> dict:
-    entry = todo_cache[entry_id]
-    return entry
-
-
 @app.put("/entries/{entry_id}")
 async def update_entry(entry_id: int, entry_payload: dict) -> dict:
     entry = entry_payload["message"]
@@ -80,6 +74,5 @@ async def delete_entry(entry_id: int):
 
 @app.post("/shutdown")
 async def save_to_database() -> dict:
-    db.close_db()
     os.system("pkill uvicorn")
     return {"message": "Server Shutdown"}

@@ -10,12 +10,28 @@ time.sleep(2)
 title = input("Enter todo list title: ")
 init_response = requests.post("http://127.0.0.1:8000/tables", json={"message": title})
 
+cache = {}
+
+
+def update_list(todo_cache):
+    if not todo_cache:
+        return todo_cache
+    else:
+        todo_list = {}
+        for i, entry in enumerate(todo_cache.values(), start=1):
+            entry["id_num"] = i
+            todo_list[i] = entry
+        return todo_list
+
+
 if init_response.status_code == 200:
     while True:
         print("Current list of entries")
-        current_list = requests.get("http://127.0.0.1:8000/entries")
+        get_list = requests.get("http://127.0.0.1:8000/entries").json()
+        print(get_list)
+        current_list = update_list(get_list)
         entry_list = []
-        for key, value in current_list.json().items():
+        for key, value in current_list.items():
             for k, v in value.items():
                 entry_list.append(f"{k}: {v}, ")
             entry_list.append("\n")
